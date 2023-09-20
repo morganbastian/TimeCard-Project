@@ -42,6 +42,7 @@ function Home(props) {
       setRunningTotalHours(parseFloat(storedTotalHours));
     }
   }, []);
+  
   function handleReset() {
     // Clear the values in local storage
     localStorage.removeItem('selectedDate');
