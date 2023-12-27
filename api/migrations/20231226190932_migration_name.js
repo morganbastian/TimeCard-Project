@@ -10,7 +10,7 @@ exports.up = function(knex) {
     table.date('date').notNullable();
     table.time('startTime').notNullable();
     table.time('endTime').notNullable();
-    table.integer('totalHours').notNullable()
+    table.decimal('totalHours').notNullable()
   })
 };
 
