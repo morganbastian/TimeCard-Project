@@ -1,90 +1,75 @@
 require('dotenv').config()
 
 const {
-	findAllBookings,
-	findBookingById,
-	findBookingByUserId,
-	modifyBooking,
-	destroyBooking,
-	addNewBooking,
+	findTimeEntryById,
+	findTimeEntryByEmployeeId,
+	addNewTimeEntry,
+	findAllTimeEntries,
+	modifyTimeEntry
 } = require('./service')
 
-exports.showBookingById = async (req, res) => {
+exports.showTimeEntryById = async (req, res) => {
 	try {
 		// Only allow admins and account owners to access the user data
-		const foundBooking = await findBookingById(req.params.id)
+		const foundTimeEntry = await findTimeEntryById(req.params.id)
 
-		if (!foundBooking) {
-			return res.status(404).json('No User Found')
+		if (!foundTimeEntry) {
+			return res.status(404).json('No Entry Found')
 		}
 
-		return res.json(foundBooking)
+		return res.json(foundTimeEntry)
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json()
 	}
 }
 
-exports.showBookingByUserId = async (req, res) => {
+exports.showTimeEntryByEmployeeId = async (req, res) => {
 	try {
 		// Only allow admins and account owners to access the user data
-		const foundBooking = await findBookingByUserId(req.params.userId)
+		const foundTimeEntry = await findTimeEntryByEmployeeId(req.params.userId)
 
-		if (!foundBooking) {
-			return res.status(404).json('No User Found')
+		if (!foundTimeEntry) {
+			return res.status(404).json('No Entry Found')
 		}
 
-		return res.json(foundBooking)
+		return res.json(foundTimeEntry)
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json()
 	}
 }
-exports.createNewBooking = async (req, res) => {
+exports.createNewTimeEntry = async (req, res) => {
 	try {
-		const newBooking = req.body
-		const booking = await addNewBooking(newBooking)
-		return res.json(booking)
-	} catch (error) {
-		console.log(error)
-		return res.status(500).json()
-	}
-}
-
-exports.showAllBookings = async (req, res) => {
-	try {
-		const allBookings = await findAllBookings(req.params)
-		console.log('allBookings: ', allBookings)
-		return res.json(allBookings)
+		const newTimeEntry = req.body
+		const entry = await addNewTimeEntry(newTimeEntry)
+		return res.json(entry)
 	} catch (error) {
 		console.log(error)
 		return res.status(500).json()
 	}
 }
 
-exports.updateBooking = async (req, res) => {
-	const bookingId = req.params.id
-	const newBookingData = req.body
-	console.log('user', req.user)
+exports.showAllTimeEntries = async (req, res) => {
 	try {
-		const bookingData = await findBookingById(bookingId)
+		const allTimeEntries = await findAllTimeEntries(req.params)
+		console.log('allTimeEntries: ', allTimeEntries)
+		return res.json(allTimeEntries)
+	} catch (error) {
+		console.log(error)
+		return res.status(500).json()
+	}
+}
 
-		// Only allow users to edit their own reports unless the user is an admin
-		if (req.user.id !== bookingData.userId && req.user.role !== 'admin') {
-			return res
-				.status(403)
-				.json({ error: 'You do not have permission to access this resource' })
-		}
-
-		const updatedBooking = await modifyBooking(
-			newBookingData,
-			bookingId
+exports.updateTimeEntry = async (req, res) => {
+	const timeEntryId = req.params.id
+	const newTimeEntryData = req.body
+	const updatedTimeEntry = await modifyTimeEntry(
+			newTimeEntryData,
+			timeEntryId
 		)
-		return res.json(updatedBooking)
-	} catch (error) {
-		console.log(error)
-		return res.status(500).json()
-	}
+		return res.json(updatedTimeEntry)
+	
 }
 
 	

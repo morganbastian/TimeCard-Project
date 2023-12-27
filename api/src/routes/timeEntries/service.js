@@ -1,6 +1,6 @@
 const knex = require('../../knex.js')
 
-exports.findBookingById = async (id) => {
+exports.findTimeEntryById = async (id) => {
 	const results = await knex('time_entries').select('*').where('id', id)
 	return results
 }
