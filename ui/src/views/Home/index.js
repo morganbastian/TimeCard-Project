@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers';
 import { TimePicker } from '@mui/x-date-pickers';
 import { Box, Button, Typography } from '@mui/material';
+import { createNewTimeEntry } from '../../utility/api'
 
 function Home(props) {
   // State Variables
