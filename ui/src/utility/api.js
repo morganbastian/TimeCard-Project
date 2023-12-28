@@ -2,20 +2,25 @@ const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:9000'
 
 
 export const createNewTimeEntry = async (timeEntryData) => {
-	const response = await fetch(`${baseUrl}/timeEntries/new`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(timeEntryData),
-	})
+  try {
+    const response = await fetch(`${baseUrl}/timeEntries/new`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(timeEntryData),
+    });
 
-	const responseData = await response.json()
-	if (!response.ok) {
-		return {
-      success: false,
-      error: `Status Code: ${response?.status} - ${responseData?.message}`
-		}
-	} return { success: true}
-}
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error in createNewTimeEntry: ", error);
+    throw error;  // Re-throw to allow the calling component to handle it
+  }
+};
 
 export const getTimeEntryById = async (id) => {
 	const response = await fetch(`${baseUrl}/timeEntries/${id}`, {
