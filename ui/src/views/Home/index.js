@@ -17,12 +17,14 @@ useEffect(() => {
   //get all time entries data
   const getAllTimeEntriesData = async () => {
     const response = await getAllTimeEntries();
-    console.log(response);
+    console.log('response:' ,response);
   };
   getAllTimeEntriesData();
 }, []);
+
   //create a new time entry on submit
 const handleSubmit = async () => {
+  
   const startTimestamp = new Date(startTime).getTime();
   const endTimestamp = new Date(endTime).getTime();
   const hoursDiff = (endTimestamp - startTimestamp) / (1000 * 60 * 60); // Convert milliseconds to hours

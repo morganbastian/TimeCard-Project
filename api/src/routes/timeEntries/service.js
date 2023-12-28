@@ -64,41 +64,57 @@ exports.addNewTimeEntry = async (newEntry) => {
   return createdTimeEntry;
 }
 
-//selects all bookings from the bookings table
+//selects all time entries 
 exports.findAllTimeEntries = async () => {
 	const entries = await knex('time_entries').select('*');
-	console.log('time_entries: ', entries);
 
 	const formattedData = entries.map((item) => {
 			const date = new Date(item.date);
 			const year = date.getFullYear();
 			const month = String(date.getMonth() + 1).padStart(2, '0');
 			const day = String(date.getDate()).padStart(2, '0');
-			const formattedDate = `${month}-${day}-${year}`;
+			const formattedDate = `${year}-${month}-${day}`; // YYYY-MM-DD format
 
-			let [hours, minutes] = item.startTime.split(':');
-			hours = Number(hours);
-			const ampm = hours >= 12 ? 'PM' : 'AM';
-			hours = hours % 12;
-			hours = hours === 0 ? 12 : hours;
-			const formattedStartTime = `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
-			//create formatted end time
-			let [endHours, endMinutes] = item.endTime.split(':');
-			endHours = Number(endHours);
-			const endAmpm = endHours >= 12 ? 'PM' : 'AM';
-			endHours = endHours % 12;
-			endHours = endHours === 0 ? 12 : endHours;
-			const formattedEndTime = `${String(endHours).padStart(2, '0')}:${endMinutes} ${endAmpm}`;
-			//get the difference for start and end time
-			const startTimestamp = new Date(formattedStartTime).getTime();
-			const endTimestamp = new Date(formattedEndTime).getTime();
-			const hoursDiff = (endTimestamp - startTimestamp) / (1000 * 60 * 60); // Convert milliseconds to hours
+  // Check if startTime and endTime are not null
+  if (item.startTime && item.endTime) {
+    const formattedStartTime = convertTo24HourFormat(item.startTime, formattedDate);
+    const formattedEndTime = convertTo24HourFormat(item.endTime, formattedDate);
 
-			return { ...item, date: formattedDate, startTime: formattedStartTime, endTime: formattedEndTime, totalHours: hoursDiff };
-	});
+    // Calculate time difference
+    const startTimestamp = new Date(formattedStartTime).getTime();
+    const endTimestamp = new Date(formattedEndTime).getTime();
+    const hoursDiff = (endTimestamp - startTimestamp) / (1000 * 60 * 60); // Convert milliseconds to hours
+
+    return { ...item, date: formattedDate, startTime: formattedStartTime, endTime: formattedEndTime, totalHours: hoursDiff };
+  } else {
+    throw new Error('startTime or endTime is null');
+  }
+});
 
 	return formattedData;
 };
+
+
+function convertTo24HourFormat(time, date) {
+  let hours, minutes, ampm;
+  const match12Hour = time.match(/(\d+):(\d+)(\sAM|\sPM)/);
+  const match24Hour = time.match(/(\d+):(\d+):(\d+)/);
+
+  if (match12Hour) {
+    [hours, minutes, ampm] = match12Hour.slice(1);
+    if (ampm.trim() === 'PM' && hours !== '12') {
+      hours = (parseInt(hours, 10) + 12).toString();
+    } else if (ampm.trim() === 'AM' && hours === '12') {
+      hours = '00';
+    }
+  } else if (match24Hour) {
+    [hours, minutes] = match24Hour.slice(1);
+  } else {
+    throw new Error(`Invalid time format: ${time}`);
+  }
+
+  return `${date}T${hours}:${minutes}:00`; // Return in YYYY-MM-DDTHH:MM:SS format
+}
 
 exports.modifyTimeEntry = async (timeEntryData, id) => {
 	// Insert the user into the database and return
