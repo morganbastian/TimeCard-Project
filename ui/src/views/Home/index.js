@@ -4,12 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { DateCalendar } from '@mui/x-date-pickers'
 import { TimePicker } from '@mui/x-date-pickers'
 import { Box, Button, Typography } from '@mui/material'
-import {
-	createNewTimeEntry,
-	getTimeEntryById,
-	updateTimeEntry,
-	getAllTimeEntries,
-} from '../../utility/api'
+import { createNewTimeEntry, getAllTimeEntries } from '../../utility/api'
 
 function Home(props) {
 	// State Variables
@@ -17,7 +12,6 @@ function Home(props) {
 	const [startTime, setStartTime] = useState(null)
 	const [endTime, setEndTime] = useState(null)
 	const [totalHours, setTotalHours] = useState(0)
-  const [dailyHours, setDailyHours] = useState(0)
 
 	useEffect(() => {
 		//get all time entries data
